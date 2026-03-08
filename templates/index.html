@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Réseau K-Pop - Collaborations et Comparaisons</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <h1>Réseau K-Pop - Collaborations et Comparaisons</h1>
+
+    <!-- Formulaire pour collaborations directes -->
+    <form method="POST">
+        <h2>Voir collaborations directes d'un artiste</h2>
+        <label for="artiste_unique">Artiste :</label>
+        <select name="artiste_unique" id="artiste_unique" required>
+            <option value="" disabled selected>-- Choisir un artiste --</option>
+            {% for artiste in artistes %}
+            <option value="{{ artiste }}" {% if artiste == artiste_unique %}selected{% endif %}>{{ artiste }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Afficher</button>
+    </form>
+
+    {% if artiste_unique %}
+    <div class="resultats">
+        <h3>Collaborations directes de {{ artiste_unique }} :</h3>
+        {% if collaborations_directes %}
+        <ul>
+            {% for collab in collaborations_directes %}
+            <li>
+                <img src="{{ url_for('static', filename='images/' + collab|lower + '.jpeg') }}" 
+                     alt="{{ collab }}" width="50" 
+                     style="vertical-align:middle; border-radius:8px; margin-right:10px;">
+                {{ collab }}
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>Aucune collaboration directe trouvée.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <hr>
+
+    <!-- Formulaire pour comparer deux artistes -->
+    <form method="POST">
+        <h2>Comparer deux artistes</h2>
+        <label for="artiste1">Artiste 1 :</label>
+        <select name="artiste1" id="artiste1" required>
+            <option value="" disabled selected>-- Choisir un artiste --</option>
+            {% for artiste in artistes %}
+            <option value="{{ artiste }}" {% if artiste == artiste1 %}selected{% endif %}>{{ artiste }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="artiste2">Artiste 2 :</label>
+        <select name="artiste2" id="artiste2" required>
+            <option value="" disabled selected>-- Choisir un artiste --</option>
+            {% for artiste in artistes %}
+            <option value="{{ artiste }}" {% if artiste == artiste2 %}selected{% endif %}>{{ artiste }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Comparer</button>
+    </form>
+
+    {% if artiste1 and artiste2 %}
+    <div class="resultats">
+        <h3>Résultats pour {{ artiste1 }} et {{ artiste2 }} :</h3>
+        <p><strong>Amis en commun :</strong>
+            {% if amis_communs %}
+            <ul style="list-style:none; padding-left:0;">
+                {% for ami in amis_communs %}
+                <li style="margin-bottom:5px;">
+                    <img src="{{ url_for('static', filename='images/' + ami|lower + '.jpeg') }}" 
+                         alt="{{ ami }}" width="40" 
+                         style="vertical-align:middle; border-radius:8px; margin-right:8px;">
+                    {{ ami }}
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+                Aucun ami commun trouvé.
+            {% endif %}
+        </p>
+        <p><strong>Distance entre les deux artistes :</strong>
+            {% if distance is not none %}
+                {{ distance }}
+            {% else %}
+                Indéterminée
+            {% endif %}
+        </p>
+    </div>
+    {% endif %}
+
+    <hr>
+
+<h2>Visualiser le réseau</h2>
+
+<form action="/graph">
+    <button type="submit">Afficher le graphe</button>
+</form>
+
+</body>
+</html>
